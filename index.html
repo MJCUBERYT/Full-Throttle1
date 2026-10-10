@@ -737,7 +737,7 @@ const hl=$('help');if(hl)hl.style.display='none';$('am').style.display='none';
 const mm=[...document.querySelectorAll('canvas.hud')].find(c=>c.style.left==='16px');if(mm){mm.style.bottom='auto';mm.style.top='44px';mm.style.transform='scale(.62)';mm.style.transformOrigin='top left'}
 const sp=[...document.querySelectorAll('canvas.hud')].find(c=>c.style.right==='16px');if(sp){sp.style.bottom='auto';sp.style.right='auto';sp.style.left='50%';sp.style.top='6px';sp.style.transform='translateX(-50%) scale(.6)';sp.style.transformOrigin='top center'}
 const pb=document.querySelector('#ov p b');if(pb)pb.textContent='Tap to play';
-$('ov').addEventListener('click',()=>{const el=document.documentElement;try{const r=(el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el);if(r&&r.catch)r.catch(()=>{})}catch(e){}});
+// Fullscreen request removed: the game stays in the normal browser window.
 const mkb=(label,r,b,size,hold,down,up)=>{const e=document.createElement('div');e.className='tb';e.textContent=label;e.style.cssText+='right:calc('+r+'px + env(safe-area-inset-right,0px));bottom:calc('+b+'px + env(safe-area-inset-bottom,0px));width:'+size+'px;height:'+size+'px';
 e.addEventListener('touchstart',ev=>{if(!started)return;ev.preventDefault();ev.stopPropagation();e.classList.add('on');down()},{passive:false});
 const end=ev=>{ev.preventDefault();ev.stopPropagation();e.classList.remove('on');if(up)up()};e.addEventListener('touchend',end,{passive:false});e.addEventListener('touchcancel',end,{passive:false});document.body.appendChild(e);tbEls.push(e);return e};
