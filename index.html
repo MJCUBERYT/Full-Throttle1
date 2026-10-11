@@ -59,7 +59,7 @@ for(let i=0;i<n;i++){const a=i*2;II.push(a,a+2,a+1,a+1,a+2,a+3)}
 const g=new R.BufferGeometry();g.setAttribute('position',new R.Float32BufferAttribute(PP,3));g.setAttribute('uv',new R.Float32BufferAttribute(UU,2));g.setIndex(II);g.computeVertexNormals();return g})();
 const cabG=new R.CylinderGeometry(.95,1.3,.55,4).rotateY(Math.PI/4),rimG=new R.CylinderGeometry(.24,.24,.12,10),roofSG=new R.BoxGeometry(1.32,.06,1.7),bumG=new R.BoxGeometry(2.05,.22,.18),grG=new R.BoxGeometry(1.1,.22,.05),mirG=new R.BoxGeometry(.14,.1,.2);
 const SUNV=new R.Vector3(.3,.7,.4),sunDirV=new R.Vector3(0,1,0);
-let CHH=null,holderY0=0,CHX=null,crouchK=0,crouch=false,coverNear=false,climbT=0,climbY=0,meleeMode=false,swimK=0,sitK=0,holderZ0=0;
+let CHH=null,holderY0=0,CHX=null,crouchK=0,crouch=false,coverNear=false,climbT=0,climbY=0,meleeMode=false,swimK=0,sitK=0,holderZ0=0;let INP='kbm',PSQ=null;
 const WX={rain:0,fog:0,tr:0,tf:0,type:'clear',next:45,flash:0,wet:0},WT={clear:[0,0],cloudy:[0,.2],rain:[.85,.12],storm:[1,.22],fog:[0,.9]},gcol=new R.Color(0x8b939c);
 // ground
 const ground=new R.Mesh(new R.PlaneGeometry(2000,2000),sandM);ground.rotation.x=-Math.PI/2;scene.add(ground);
@@ -82,7 +82,7 @@ for(let i=0;i<30;i++){const x=cx+rnd(-46,46),z=cz+rnd(-46,46);if(Math.abs(x-cx)<
 const t=new R.Mesh(ttr,pTr);t.position.set(x,2,z);const c=new R.Mesh(tcan,Math.random()<.3?rM:gM);c.position.set(x,6,z);scene.add(t,c);boxes.push({x,z,hw:.4,hd:.4})}
 for(let i=0;i<8;i++){const b=new R.Mesh(new R.BoxGeometry(2.4,.5,.7),pTr);b.position.set(cx+(i<4?-1:1)*rnd(8,40),.4,cz+(i%2?3.8:-3.8));scene.add(b)}
 parks.push({x0:cx-45,x1:cx+45,z0:cz-45,z1:cz+45})}
-for(let k=-6;k<6;k++)for(let j=0;j<5;j++){const cx=k*120+60,cz=(ROADS[j]+ROADS[j+1])/2;if(PK.includes(k+','+j)){park(cx,cz);continue}if(TW.includes(k+','+j)){TWQ.push([cx,cz]);continue}if(LT.includes(k+','+j)){LTQ.push([cx,cz]);continue}
+for(let k=-6;k<6;k++)for(let j=0;j<5;j++){const cx=k*120+60,cz=(ROADS[j]+ROADS[j+1])/2;if(PK.includes(k+','+j)){park(cx,cz);continue}if(TW.includes(k+','+j)){TWQ.push([cx,cz]);continue}if(LT.includes(k+','+j)){LTQ.push([cx,cz]);continue}if(k===-1&&j===0){PSQ=[cx,cz];continue}
 const down=j>=2||(Math.abs(cx)<250&&j>=1);
 for(let a=0;a<2;a++)for(let b=0;b<2;b++){if(Math.random()<.3)continue;building(cx+(a?26:-26)+rnd(-3,3),cz+(b?26:-26)+rnd(-3,3),rnd(26,44),rnd(24,40),down?rnd(35,130):rnd(8,24))}}
 // palms
@@ -114,7 +114,7 @@ if(c.state==='ai'){if(c.dir>0&&g.position.x>730)g.position.x=-730;if(c.dir<0&&g.
 }else{
 if(c.state==='player'){const th=(keys.KeyW?1:0)-(keys.KeyS?1:0),st=(keys.KeyA?1:0)-(keys.KeyD?1:0);
 c.v+=th*((th*c.v<0)?40:(c.bike?27:18))*dt;c.v*=Math.max(0,1-(th?.12:1.2)*dt);if(keys.Space&&!c.bike)c.v*=Math.max(0,1-4*dt);
-c.v=clamp(c.v,-9,c.bike?40:34);g.rotation.y+=st*(c.bike?2.7:1.9)*dt*clamp(c.v/7,-1,1)}else if(c.state==='police')policeDrive(c,dt);else c.v*=Math.max(0,1-3*dt);
+c.v=clamp(c.v,-9,c.bike?40:34);g.rotation.y+=st*(c.bike?2.7:1.9)*dt*clamp(c.v/7,-1,1)}else if(c.state==='police')policeDrive(c,dt);else if(c.state==='return')returnDrive(c,dt);else c.v*=Math.max(0,1-3*dt);
 c.px=g.position.x;c.pz=g.position.z;g.position.x+=Math.sin(g.rotation.y)*c.v*dt;g.position.z+=Math.cos(g.rotation.y)*c.v*dt;
 for(const b of boxes){if(b.y0!=null&&(g.position.y+1.7<b.y0||g.position.y>b.y1))continue;const dx=g.position.x-b.x,dz=g.position.z-b.z,ox=b.hw+1.8-Math.abs(dx),oz=b.hd+1.8-Math.abs(dz);if(ox>0&&oz>0){if(ox<oz)g.position.x+=Math.sign(dx)*ox;else g.position.z+=Math.sign(dz)*oz;c.v*=.5}}
 g.position.x=clamp(g.position.x,-900,900);g.position.z=clamp(g.position.z,-800,760);vehFix(c,dt)}
@@ -593,7 +593,7 @@ const beamG=new R.ConeGeometry(1.7,11,12,1,true).rotateX(-Math.PI/2).translate(0
 function addBeams(c){if(c.boat||c.beams)return;const b=new R.Group();for(const x of[-.7,.7]){const m=new R.Mesh(beamG,beamM);m.raycast=()=>{};m.position.set(x,.7,2.2);b.add(m)}b.visible=false;c.g.add(b);c.beams=b}
 cars.forEach(addBeams);{const o=spawnPolice;spawnPolice=function(){o();addBeams(cars[cars.length-1])}}
 const spots=[0,1].map(()=>{const s=new R.SpotLight(0xfff2cc,0,45,.55,.5,1.2);scene.add(s,s.target);return s});
-(function an7(){requestAnimationFrame(an7);beamM.opacity=nightF*.14;const on=nightF>.05;for(const c of cars)if(c.beams){const v=on&&c.state!=='parked'&&c.state!=='wreck';if(c.beams.visible!==v)c.beams.visible=v}
+(function an7(){requestAnimationFrame(an7);beamM.opacity=nightF*.14;const on=nightF>.05;for(const c of cars)if(c.beams){const v=on&&c.state!=='parked'&&c.state!=='wreck'&&c.state!=='parkedPol';if(c.beams.visible!==v)c.beams.visible=v}
 const lit=inCar&&!inCar.boat&&nightF>.05;spots.forEach((s,i)=>{s.intensity=lit?2.4*nightF:0;if(inCar){const x=i?.7:-.7;inCar.g.localToWorld(s.position.set(x,.8,2.3));inCar.g.localToWorld(s.target.position.set(x,.2,26));s.target.updateMatrixWorld()}})})();
 function animArms(p,s,dt,aim){const A=p.arms;if(!A)return;if(p.pt>0)p.pt-=dt;if(p.rc>0)p.rc-=dt;let a0=-s*.8,a1=s*.8;
 if(aim){a1=-Math.PI/2+.05-(p.rc>0?p.rc*1.5:0);a0=-s*.3}
@@ -698,7 +698,7 @@ const rt=new R.Group();rt.position.y=1.15;mk(new R.CylinderGeometry(.12,.12,.3,8
 const tr=new R.Group();tr.position.set(.2,.7,-5.3);mk(new R.BoxGeometry(.04,1.6,.2),0x333333,0,0,0,tr);g.add(tr);mk(new R.BoxGeometry(.4,.2,.4),0xfff4c8,0,-.95,1.6,g,0xfff4c8);
 const c={g,heli:true,hp:380,state:'heli',flash:0,body:bm,cd:1,rt,tr};g.userData.car=c;g.position.set(P.position.x+300,60,P.position.z);scene.add(g);hitables.push(g);return c}
 function heliDown(c){boom(c.g.position,14,100);scene.remove(c.g);hitables.splice(hitables.indexOf(c.g),1);heli=null;heliCool=45;heliSpot.intensity=0}
-function heliUpdate(dt){if(heliCool>0)heliCool-=dt;if(wanted>=4&&!heli&&heliCool<=0)heli=makeHeli();if(wanted<4&&heli){scene.remove(heli.g);hitables.splice(hitables.indexOf(heli.g),1);heli=null;heliSpot.intensity=0}
+function heliUpdate(dt){if(heliCool>0)heliCool-=dt;if(wanted<4&&heli){scene.remove(heli.g);hitables.splice(hitables.indexOf(heli.g),1);heli=null;heliSpot.intensity=0}
 if(!heli){return}const g=heli.g;heliA+=.35*dt;const tx=P.position.x+Math.cos(heliA)*35,tz=P.position.z+Math.sin(heliA)*35,ty=Math.max(P.position.y,0)+38,dx=tx-g.position.x,dz=tz-g.position.z,d=Math.hypot(dx,dz)||1,sp=Math.min(30,d*.8);
 g.position.x+=dx/d*sp*dt;g.position.z+=dz/d*sp*dt;g.position.y+=(ty-g.position.y)*Math.min(1,dt*.8);if(d>2)g.rotation.y=Math.atan2(dx,dz);g.rotation.z=-clamp(sp/30,0,1)*.12;heli.rt.rotation.y+=dt*32;heli.tr.rotation.x+=dt*40;
 heliSpot.position.copy(g.position);heliSpot.target.position.set(P.position.x,P.position.y,P.position.z);heliSpot.target.updateMatrixWorld();heliSpot.intensity=nightF>.1?4:0;
@@ -737,7 +737,6 @@ const hl=$('help');if(hl)hl.style.display='none';$('am').style.display='none';
 const mm=[...document.querySelectorAll('canvas.hud')].find(c=>c.style.left==='16px');if(mm){mm.style.bottom='auto';mm.style.top='44px';mm.style.transform='scale(.62)';mm.style.transformOrigin='top left'}
 const sp=[...document.querySelectorAll('canvas.hud')].find(c=>c.style.right==='16px');if(sp){sp.style.bottom='auto';sp.style.right='auto';sp.style.left='50%';sp.style.top='6px';sp.style.transform='translateX(-50%) scale(.6)';sp.style.transformOrigin='top center'}
 const pb=document.querySelector('#ov p b');if(pb)pb.textContent='Tap to play';
-// Fullscreen request removed: the game stays in the normal browser window.
 const mkb=(label,r,b,size,hold,down,up)=>{const e=document.createElement('div');e.className='tb';e.textContent=label;e.style.cssText+='right:calc('+r+'px + env(safe-area-inset-right,0px));bottom:calc('+b+'px + env(safe-area-inset-bottom,0px));width:'+size+'px;height:'+size+'px';
 e.addEventListener('touchstart',ev=>{if(!started)return;ev.preventDefault();ev.stopPropagation();e.classList.add('on');down()},{passive:false});
 const end=ev=>{ev.preventDefault();ev.stopPropagation();e.classList.remove('on');if(up)up()};e.addEventListener('touchend',end,{passive:false});e.addEventListener('touchcancel',end,{passive:false});document.body.appendChild(e);tbEls.push(e);return e};
@@ -756,9 +755,57 @@ const rel0=()=>{jk.style.left='38px';jk.style.top='38px';keys.KeyW=keys.KeyS=key
 addEventListener('touchstart',e=>{if(!started)return;for(const t of e.changedTouches){if(jid==null&&t.clientX<innerWidth*.42&&t.clientY>innerHeight*.3){jid=t.identifier;const r=jb.getBoundingClientRect();setStick(t.clientX-(r.left+66),t.clientY-(r.top+66))}else if(lid==null&&t.clientX>=innerWidth*.3){lid=t.identifier;lx=t.clientX;ly=t.clientY}}e.preventDefault()},{passive:false});
 addEventListener('touchmove',e=>{if(!started)return;for(const t of e.changedTouches){if(t.identifier===jid){const r=jb.getBoundingClientRect();setStick(t.clientX-(r.left+66),t.clientY-(r.top+66))}else if(t.identifier===lid){yaw-=(t.clientX-lx)*.0065;pitch=clamp(pitch+(t.clientY-ly)*.0065,-.5,1.1);lx=t.clientX;ly=t.clientY}}e.preventDefault()},{passive:false});
 const tend=e=>{for(const t of e.changedTouches){if(t.identifier===jid){jid=null;rel0()}if(t.identifier===lid)lid=null}if(started)e.preventDefault()};addEventListener('touchend',tend,{passive:false});addEventListener('touchcancel',tend,{passive:false});
-(function tui(){requestAnimationFrame(tui);const d=started?'flex':'none';for(const e of tbEls)if(e.style.display!==d)e.style.display=d;if(fireHeld&&!drawT&&!inCar)punch()})();
+(function tui(){requestAnimationFrame(tui);const d=(started&&INP==='touch')?'flex':'none';for(const e of tbEls)if(e.style.display!==d)e.style.display=d;if(fireHeld&&!drawT&&!inCar)punch()})();
 if(innerHeight>innerWidth){const n=document.createElement('div');n.className='hud';n.style.cssText='top:40%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);padding:10px 16px;border-radius:10px;font-size:15px;text-align:center';n.textContent='Rotate your device to landscape for the best view';document.body.appendChild(n);setTimeout(()=>n.remove(),6000)}}
 if(IS_TOUCH)initTouch();addEventListener('touchstart',initTouch,{once:true,passive:true});
+let padOn=false,lastTouchT=0,helpHTML=null;const gpPrev=[];let gpStartT=0;
+const UA=typeof navigator!=='undefined'?navigator.userAgent:'',MT=typeof navigator!=='undefined'?(navigator.maxTouchPoints||0):0,FINE=typeof matchMedia==='function'&&matchMedia('(hover:hover) and (pointer:fine)').matches,MN=typeof screen!=='undefined'?Math.min(screen.width||innerWidth,screen.height||innerHeight):Math.min(innerWidth,innerHeight);
+const DEV=(!FINE&&(MT>0||/Android|iPhone|iPad|iPod/i.test(UA)))?(MN<600?'Phone':'Tablet'):'Computer';INP=DEV==='Computer'?'kbm':'touch';
+const LEG={kbm:'<b>Keyboard &amp; mouse</b><br>WASD move &middot; Mouse look &middot; Left-click shoot &middot; F / right-click gun &middot; 1-7 weapons<br>E use / enter &middot; Space jump &middot; Shift sprint &middot; C cover &middot; R reload &middot; G grenade',
+touch:'<b>Touch controls</b><br>Left stick: move &middot; Drag the right side: look<br>FIRE &middot; GUN &middot; JUMP &middot; USE &middot; RELOAD &middot; COVER &middot; NADE &middot; WEAPON buttons',
+pad:'<b>Controller</b><br>Left stick move &middot; Right stick look &middot; RT shoot (gas in a car) &middot; LT gun (brake in a car)<br>A jump &middot; B cover &middot; X use / enter &middot; Y next weapon &middot; LB prev weapon &middot; RB grenade &middot; D-pad up reload'};
+const ctl=document.createElement('p');ctl.style.cssText='font-size:13px;line-height:1.6;max-width:560px;background:rgba(0,0,0,.35);padding:8px 14px;border-radius:10px';{const ov=$('ov');ov.insertBefore(ctl,ov.lastElementChild)}
+const cEls=[...document.querySelectorAll('canvas.hud')],mmE=cEls.find(c=>c.style.width==='200px'),spE=cEls.find(c=>c.style.width==='240px'),amE=$('am');
+function layoutFor(m){const t=m==='touch';if(mmE){mmE.style.bottom=t?'auto':'16px';mmE.style.top=t?'44px':'auto';mmE.style.transform=t?'scale(.62)':'';mmE.style.transformOrigin='top left'}if(spE){spE.style.bottom=t?'auto':'14px';spE.style.right=t?'auto':'16px';spE.style.left=t?'50%':'auto';spE.style.top=t?'6px':'auto';spE.style.transform=t?'translateX(-50%) scale(.6)':'';spE.style.transformOrigin='top center'}if(amE)amE.style.display=t?'none':'block'}
+function showHelp(m){const hl=$('help');if(!hl)return;if(helpHTML===null)helpHTML=hl.innerHTML;if(m==='kbm'){hl.innerHTML=helpHTML;hl.style.display='block'}else if(m==='pad'){hl.innerHTML=LEG.pad;hl.style.display='block'}else hl.style.display='none';hl.style.transition='opacity .3s';hl.style.opacity=.9;clearTimeout(hl._t);hl._t=setTimeout(()=>{hl.style.transition='opacity 2s';hl.style.opacity=0},22000)}
+function legend(){ctl.innerHTML='<span style="opacity:.8">Detected: '+DEV+(padOn?' + controller':'')+' &mdash; showing '+(INP==='kbm'?'keyboard &amp; mouse':INP==='touch'?'touch':'controller')+' controls</span><br>'+LEG[INP]}
+function setInput(m){if(INP!==m){if(INP==='touch'||INP==='pad')keys.KeyW=keys.KeyS=keys.KeyA=keys.KeyD=keys.ShiftLeft=keys.Space=false;INP=m}legend();layoutFor(INP);showHelp(INP)}
+addEventListener('touchstart',()=>{lastTouchT=performance.now();if(INP!=='touch')setInput('touch')},{passive:true});
+addEventListener('keydown',()=>{if(INP!=='kbm')setInput('kbm')});
+addEventListener('mousemove',()=>{if(performance.now()-lastTouchT>1200&&INP!=='kbm')setInput('kbm')});
+addEventListener('gamepadconnected',()=>{padOn=true;legend()});addEventListener('gamepaddisconnected',()=>{padOn=false;if(INP==='pad')setInput(DEV==='Computer'?'kbm':'touch');else legend()});
+function pollPad(dt){const gps=(typeof navigator!=='undefined'&&navigator.getGamepads)?navigator.getGamepads():[];let g=null;for(const q of gps)if(q&&q.connected){g=q;break}if(!g){if(padOn){padOn=false;legend()}return}if(!padOn){padOn=true;legend()}
+const ax=i=>Math.abs(g.axes[i]||0)>.18?g.axes[i]:0,b=i=>!!(g.buttons[i]&&g.buttons[i].pressed),lx=ax(0),ly=ax(1),rx=ax(2),ry=ax(3);
+if((lx||ly||rx||ry||g.buttons.some(x=>x.pressed))&&INP!=='pad')setInput('pad');if(INP!=='pad')return;
+if(!started){if(b(0)&&performance.now()-gpStartT>600){gpStartT=performance.now();$('ov').click()}return}
+keys.KeyW=ly<-.3||(inCar&&b(7));keys.KeyS=ly>.3||(inCar&&b(6));keys.KeyA=lx<-.3;keys.KeyD=lx>.3;keys.ShiftLeft=b(10)||Math.hypot(lx,ly)>.92;keys.Space=b(0);yaw-=rx*dt*2.8;pitch=clamp(pitch+ry*dt*1.8,-.5,1.1);
+const edge=(i,fn)=>{const p=b(i);if(p&&!gpPrev[i])fn();gpPrev[i]=p};
+edge(1,()=>{if(!inCar)crouch=!crouch});edge(2,()=>interact());edge(3,()=>selW((wi+1)%W.length));edge(4,()=>selW((wi+W.length-1)%W.length));edge(5,()=>throwNade());edge(6,()=>{if(!inCar)toggle()});edge(12,()=>{if(drawT&&rel<=0&&ammo<W[wi].mag){rel=1.2;hint()}});edge(8,()=>skipTime(3));edge(9,()=>{const ks=Object.keys(WT);setWeather(ks[(ks.indexOf(WX.type)+1)%ks.length])});
+const rt=b(7);if(!inCar){if(rt&&!gpPrev[7]&&!drawT)punch();firing=rt;if(rt&&drawT)tryFire()}gpPrev[7]=rt}
+{let last=performance.now();(function an11(){requestAnimationFrame(an11);const n=performance.now(),dt=Math.min(.1,(n-last)/1000);last=n;try{pollPad(dt)}catch(e){}})()}
+setInput(INP);
+const PST=[],officers=[];let STN=null;
+if(PSQ){const sx=PSQ[0],bz=PSQ[1]-28,fz=bz+10.06;building(sx,bz,30,20,9);
+const sg=new R.Mesh(new R.PlaneGeometry(11,1.7),new R.MeshBasicMaterial({map:signT('POLICE','#1d3f8f')}));sg.position.set(sx,7.4,fz);scene.add(sg);
+const dr=new R.Mesh(new R.PlaneGeometry(3.6,3.4),new R.MeshBasicMaterial({color:0x182838}));dr.position.set(sx,1.7,fz+.01);scene.add(dr);
+const sp=new R.Mesh(new R.PlaneGeometry(30,.7),new R.MeshBasicMaterial({color:0x1d3f8f}));sp.position.set(sx,5.2,fz);scene.add(sp);
+for(const o of[-3.2,3.2]){const l=new R.Mesh(new R.BoxGeometry(.4,.4,.3),new R.MeshBasicMaterial({color:0x2a5bff}));l.position.set(sx+o,3.7,fz+.2);scene.add(l)}
+const lotZ=bz+10+18;strip(70,36,lotZ,.05,0x3a3a48).position.x=sx;
+for(const r of[-95,-66]){const t=stallT.clone();t.repeat.set(70/2.8,1);t.needsUpdate=true;const m=new R.Mesh(new R.PlaneGeometry(70,5.5),new R.MeshLambertMaterial({map:t,transparent:true,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(sx,.06,r);scene.add(m);
+for(const i of[2,6,10,14,18,22])PST.push({x:sx-35+1.4+2.8*i,z:r,ry:r<-80?Math.PI:0,used:false})}
+STN={x:sx,z:fz}}
+function removeCar(c){scene.remove(c.g);const i=cars.indexOf(c);if(i>=0)cars.splice(i,1);const j=hitables.indexOf(c.g);if(j>=0)hitables.splice(j,1);if(c.stall)c.stall.used=false}
+function pickStall(c){let best=null,bd=1e9;for(const s of PST){if(s.used)continue;const d=Math.hypot(s.x-c.g.position.x,s.z-c.g.position.z);if(d<bd){bd=d;best=s}}if(best)best.used=true;return best}
+function sendHome(c){c.pol=false;c.state='return';c.stuck=0;c.parkT=0;c.lr.material.emissive.setHex(0x220000);c.lb.material.emissive.setHex(0x000022);c.stall=pickStall(c);if(!c.stall||!STN)removeCar(c)}
+function syncPolice(){const n=cars.filter(c=>c.pol).length,want=wanted?Math.min(6,wanted+1):0;if(!wanted){for(const c of cars.slice())if(c.pol&&c.state==='police')sendHome(c);return}for(let i=n;i<want;i++)spawnPolice()}
+function returnDrive(c,dt){const g=c.g,gx=g.position.x,gz=g.position.z,s=c.stall;if(!s){removeCar(c);return}let tx=s.x,tz=s.z,wp=false;
+if(gz>58){wp=true;if(Math.abs(gx)<8.5&&gz<=446){tx=0;tz=36}else{tx=0;tz=440}}
+const dx=tx-gx,dz=tz-gz,d=Math.hypot(dx,dz);let df=Math.atan2(dx,dz)-g.rotation.y;df=Math.atan2(Math.sin(df),Math.cos(df));g.rotation.y+=clamp(df,-2.2*dt,2.2*dt)*Math.min(1,.3+Math.abs(c.v)/5);
+c.v+=((wp?20:(d>14?18:(d>3?6:0)))-c.v)*Math.min(1,1.6*dt);c.stuck=(Math.abs(c.v)<2&&d>10)?c.stuck+dt:0;if(c.stuck>3){c.stuck=0;g.position.set(STN?STN.x:s.x,0,-52);g.rotation.y=Math.PI;c.v=0}
+if(!wp&&d<3){c.state='parkedPol';c.v=0;g.position.set(s.x,0,s.z);g.rotation.y=s.ry;c.parkT=0;for(let i=0;i<2;i++){addPed({x0:s.x-1,x1:s.x+1,z0:s.z-1,z1:s.z+1},1);const p=peds[peds.length-1];p.g.position.set(s.x+(i?2:-2),0,s.z+(s.ry===0?-2.4:2.4));p.sp=2.3;p.route=[[STN.x,STN.z+4,0],[STN.x,STN.z+.3,0]];officers.push(p)}}}
+{let last=performance.now();(function an12(){requestAnimationFrame(an12);const n=performance.now(),dt=Math.min(.1,(n-last)/1000);last=n;
+for(let i=officers.length-1;i>=0;i--){const p=officers[i];if(wanted>0){officers.splice(i,1);continue}if(p.state==='dead'||!p.route||!p.route.length){scene.remove(p.g);const a=peds.indexOf(p);if(a>=0)peds.splice(a,1);const b=hitables.indexOf(p.g);if(b>=0)hitables.splice(b,1);officers.splice(i,1)}}
+for(const c of cars.slice())if(c.state==='parkedPol'){c.parkT+=dt;if(c.parkT>60)removeCar(c)}})()}
 starsHUD();hpHUD();
 setMode(0);hint();applyTime();
 let last=performance.now();(function loop(n){requestAnimationFrame(loop);const dt=Math.min(.05,(n-last)/1000);last=n;try{update(dt)}catch(er){errToast(er)}renderer.render(scene,cam)})(last);
